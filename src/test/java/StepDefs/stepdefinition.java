@@ -8,6 +8,7 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.Select;
 import org.testng.Assert;
@@ -16,7 +17,7 @@ public class stepdefinition {
 
    WebDriver driver ;
    String URL = "https://parabank.parasoft.com/parabank/index.htm";
-   String userName = "John";
+   String userName = "john";
    String password = "demo";
    Scenario scenario;
 
@@ -75,17 +76,19 @@ public class stepdefinition {
         Select accType = new Select(driver.findElement(By.id("type")));
         accType.selectByVisibleText(string);
         Select accNumber = new Select(driver.findElement(By.id("fromAccountId")));
-        accNumber.selectByVisibleText("12345");
+        accNumber.selectByIndex(0);
     }
     @When("User clicks on Open New Account button")
-    public void user_clicks_on_open_new_account_button() {
+    public void user_clicks_on_open_new_account_button() throws InterruptedException {
+        Thread.sleep(5000);
       driver.findElement(By.xpath("//input[@value='Open New Account']")).click();
     }
     @Then("Account is generated and message is given with account number link")
     public void account_is_generated_and_message_is_given_with_account_number_link() {
-       Assert.assertEquals(driver.findElement(By.xpath("//h1[text()='Account Opened!']")).isDisplayed(),true);
-       String accNumberLink = driver.findElement(By.id("newAccountId")).getText();
-       scenario.log("New generated account number is : " + accNumberLink);
+       WebElement element = driver.findElement(By.id("newAccountId"));
+       String accNumber = element.getText();
+       Assert.assertEquals(element.isDisplayed(),true);
+       scenario.log("New generated account number is : " + accNumber);
     }
 
 }
