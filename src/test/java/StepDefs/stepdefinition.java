@@ -13,12 +13,16 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.Select;
 import org.testng.Assert;
 
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
 public class stepdefinition {
 
    WebDriver driver ;
    String URL = "https://parabank.parasoft.com/parabank/index.htm";
    String userName = "john";
    String password = "demo";
+   String acctype = "SAVINGS";
    Scenario scenario;
 
    @Before  //native dependency injection in cucumber
@@ -34,6 +38,7 @@ public class stepdefinition {
         driver = new ChromeDriver();
         driver.manage().window().maximize();
         driver.manage().deleteAllCookies();
+        driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
     }
     @Given("user navigated to the application URL")
     public void user_navigated_to_the_application_url() {
@@ -72,9 +77,9 @@ public class stepdefinition {
 
     }
     @When("User select account type as {string} and default account number")
-    public void user_select_account_type_as_and_default_account_number(String string) {
+    public void user_select_account_type_as_and_default_account_number( String acctype) {
         Select accType = new Select(driver.findElement(By.id("type")));
-        accType.selectByVisibleText(string);
+        accType.selectByVisibleText(acctype);
         Select accNumber = new Select(driver.findElement(By.id("fromAccountId")));
         accNumber.selectByIndex(0);
     }
@@ -91,4 +96,42 @@ public class stepdefinition {
        scenario.log("New generated account number is : " + accNumber);
     }
 
+    @Given("User clicks on Transfer Funds link")
+    public void user_clicks_on_transfer_funds_link() {
+       driver.findElement(By.xpath("//a[text()='Transfer Funds']")).click();
+
+    }
+    @Then("User is navigated to {string} page")
+    public void user_is_navigated_to_page(String string) {
+       Assert.assertEquals(driver.getTitle(),string);
+    }
+
+
+    @When("User enters amount and  select sender account number and recipient account number")
+    public void user_enter_amount_and_select_sender_account_number_and_recipient_account_number() throws InterruptedException {
+       driver.findElement(By.id("amount")).sendKeys("2");
+       Thread.sleep(2000);
+       Select FromAcc = new Select(driver.findElement(By.id("fromAccountId")));
+       FromAcc.selectByIndex(0);
+       Thread.sleep(2000);
+        Select ToAcc = new Select(driver.findElement(By.id("toAccountId")));
+       ToAcc.selectByIndex(1);
+
+    }
+    @When("User clicks on TRANSFER button")
+    public void user_clicks_on_transfer_button() {
+        driver.findElement(By.xpath("//input[@value='Transfer']")).click();
+    }
+    @Then("Transfer Complete message is  displayed")
+    public void transfer_complete_message_is_displayed() {
+       WebElement SuccessMsg = driver.findElement(By.xpath("//h1[text()='Transfer Complete!']"));
+       Assert.assertEquals(SuccessMsg.isDisplayed(),true);
+       WebElement amount = driver.findElement(By.id("amount"));
+       WebElement FromAccNo = driver.findElement(By.id("fromAccountId"));
+       WebElement ToAccNo = driver.findElement(By.id("toAccountId"));
+        String amountText = amount.getText();
+        String fromAcNm = FromAccNo.getText();
+        String toAcNm = ToAccNo.getText();
+        scenario.log("Message : " + amountText+ "has been transferred from account "+fromAcNm+ "to account "+toAcNm);
+    }
 }
