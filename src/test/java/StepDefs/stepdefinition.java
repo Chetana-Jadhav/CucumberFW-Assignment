@@ -114,13 +114,13 @@ public class stepdefinition {
        Select FromAcc = new Select(driver.findElement(By.id("fromAccountId")));
        FromAcc.selectByIndex(0);
        Thread.sleep(2000);
-        Select ToAcc = new Select(driver.findElement(By.id("toAccountId")));
+       Select ToAcc = new Select(driver.findElement(By.id("toAccountId")));
        ToAcc.selectByIndex(1);
 
     }
     @When("User clicks on TRANSFER button")
     public void user_clicks_on_transfer_button() {
-        driver.findElement(By.xpath("//input[@value='Transfer']")).click();
+      driver.findElement(By.xpath("//input[@value='Transfer']")).click();
     }
     @Then("Transfer Complete message is  displayed")
     public void transfer_complete_message_is_displayed() {
@@ -134,4 +134,48 @@ public class stepdefinition {
         String toAcNm = ToAccNo.getText();
         scenario.log("Message : " + amountText+ "has been transferred from account "+fromAcNm+ "to account "+toAcNm);
     }
+    @When("User clicks on Bill Pay link")
+    public void user_clicks_on_bill_pay_link() {
+        driver.findElement(By.linkText("Bill Pay")).click();
+    }
+    @Then("user is navigated to ParaBank | Bill Pay page")
+    public void user_is_navigated_to_para_bank_bill_pay_page() {
+       Assert.assertEquals(driver.getTitle(),"ParaBank | Bill Pay");
+
+    }
+    @When("User enter Payees Name as {string} and Address as {string} and City as {string} State as {string} and Zipcode as {string} and")
+    public void user_enter_payees_name_as_and_address_as_and_city_as_state_as_and_zipcode_as_and(String userName, String string2, String string3, String string4, String string5) {
+        driver.findElement(By.xpath("//input[@name ='payee.name']")).sendKeys(userName);
+        driver.findElement(By.xpath("//input[@name ='payee.address.street']")).sendKeys(string2);
+        driver.findElement(By.xpath("//input[@name ='payee.address.city']")).sendKeys(string3);
+        driver.findElement(By.xpath("//input[@name ='payee.address.state']")).sendKeys(string4);
+        driver.findElement(By.xpath("//input[@name ='payee.address.zipCode']")).sendKeys(string5);
+        driver.findElement(By.xpath("//input[@name ='payee.phoneNumber']")).sendKeys("112233");
+    }
+    @When("User enters Account number as {string} verify account {string} and amount as {string} and selects sender's account number")
+    public void user_enters_account_number_as_verify_account_and_amount_as_and_selects_sender_s_account_number(String string, String string2, String string3) {
+        driver.findElement(By.xpath("//input[@name ='payee.accountNumber']")).sendKeys(string);
+        driver.findElement(By.xpath("//input[@name ='verifyAccount']")).sendKeys(string2);
+        driver.findElement(By.xpath("//input[@name ='amount']")).sendKeys(string3);
+        Select AcNum = new Select(driver.findElement(By.name("fromAccountId")));
+        AcNum.selectByIndex(0);
+    }
+    @When("clicks on SEND PAYMENTS button")
+    public void clicks_on_send_payments_button() {
+        driver.findElement(By.xpath("//input[@value = 'Send Payment']")).click();
+    }
+    @Then("Bill payment is completed and success Message is given")
+    public void bill_payment_is_completed_and_success_message_is_given() {
+       WebElement SuccessMsg = driver.findElement(By.xpath("//h1[@class ='title' and text() = 'Bill Payment Complete']"));
+       String SM = SuccessMsg.getText();
+       //Assert.assertEquals(SuccessMsg.isDisplayed(), true, "Success message is displayed");
+      WebElement payeename = driver.findElement(By.xpath("//span[@id='payeeName']"));
+      WebElement Amount = driver.findElement(By.id("amount"));
+      WebElement senderAcc = driver.findElement(By.id("fromAccountId"));
+      String senderAccount = senderAcc.getText();
+      String amt = Amount.getText();
+      String PayeeName = payeename.getText();
+      scenario.log("Bill Payment to "+PayeeName+ "in the amount of "+amt+ "from account "+senderAccount+ "was successful.");
+    }
+
 }
