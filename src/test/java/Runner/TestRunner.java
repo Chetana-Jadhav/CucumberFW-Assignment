@@ -6,7 +6,6 @@ import io.cucumber.testng.CucumberOptions;
 @CucumberOptions(
         features = "classpath:features",
         glue = "StepDefs",
-        tags = "@Billpay",
         plugin = {
                 "pretty",
                 "html:target/cucumber-reports.html"

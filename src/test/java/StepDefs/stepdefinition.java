@@ -109,6 +109,8 @@ public class stepdefinition {
 
     @When("User enters amount and  select sender account number and recipient account number")
     public void user_enter_amount_and_select_sender_account_number_and_recipient_account_number() throws InterruptedException {
+       driver.navigate().refresh();
+       Thread.sleep(2000);
        driver.findElement(By.id("amount")).sendKeys("2");
        Thread.sleep(2000);
        Select FromAcc = new Select(driver.findElement(By.id("fromAccountId")));
@@ -165,17 +167,59 @@ public class stepdefinition {
         driver.findElement(By.xpath("//input[@value = 'Send Payment']")).click();
     }
     @Then("Bill payment is completed and success Message is given")
-    public void bill_payment_is_completed_and_success_message_is_given() {
+    public void bill_payment_is_completed_and_success_message_is_given() throws InterruptedException {
        WebElement SuccessMsg = driver.findElement(By.xpath("//h1[@class ='title' and text() = 'Bill Payment Complete']"));
        String SM = SuccessMsg.getText();
        //Assert.assertEquals(SuccessMsg.isDisplayed(), true, "Success message is displayed");
       WebElement payeename = driver.findElement(By.xpath("//span[@id='payeeName']"));
       WebElement Amount = driver.findElement(By.id("amount"));
+      Thread.sleep(2000);
       WebElement senderAcc = driver.findElement(By.id("fromAccountId"));
+      Thread.sleep(2000);
       String senderAccount = senderAcc.getText();
+      Thread.sleep(2000);
       String amt = Amount.getText();
+      Thread.sleep(2000);
       String PayeeName = payeename.getText();
-      scenario.log("Bill Payment to "+PayeeName+ "in the amount of "+amt+ "from account "+senderAccount+ "was successful.");
+      Thread.sleep(2000);
+      scenario.log("Bill Payment to "+ PayeeName + " in the amount of "+ amt + " from account "+ senderAccount + " was successful.");
+    }
+    @Given("User clicks on request loan link")
+    public void user_clicks_on_request_loan_link() {
+       driver.findElement(By.partialLinkText("Request Loan")).click();
+    }
+    @When("user enters loan amount as {string} and Down payment as {string}")
+    public void user_enters_loan_amount_as_and_down_payment_as(String string, String string2) {
+        driver.findElement(By.id("amount")).sendKeys(string);
+        driver.findElement(By.id("downPayment")).sendKeys(string2);
+
+    }
+    @When("selects account number and clicks on apply button")
+    public void selects_account_number_and_clicks_on_apply_button() {
+        Select FromAccount = new Select(driver.findElement(By.id("fromAccountId")));
+        FromAccount.selectByIndex(0);
+        driver.findElement(By.xpath("//input[@value= 'Apply Now']")).click();
+    }
+    @Then("loan request should be successful and success message should be given")
+    public void loan_request_should_be_successful_and_success_message_should_be_given() {
+       WebElement message = driver.findElement(By.xpath("//h1[text()='Loan Request Processed']"));
+       //WebElement congratsmsg = driver.findElement(By.xpath("//p[text()='Congratulations, your loan has been approved.']"));
+      // WebElement AccNoMsg = driver.findElement(By.xpath("//b[text()='Your new account number:']"));
+       WebElement loanProvider = driver.findElement(By.id("loanProviderName"));
+       WebElement date = driver.findElement(By.id("responseDate"));
+       WebElement loanStatus = driver.findElement(By.id("loanStatus"));
+       //WebElement NewAcNum = driver.findElement(By.id("newAccountId"));
+      // String New_Ac_No = NewAcNum.getText();
+       String Loan_status = loanStatus.getText();
+       String reponseDate = date.getText();
+       String Loan_provider = loanProvider.getText();
+       //String AcNumMsg = AccNoMsg.getText();
+      // String congomsg = congratsmsg.getText();
+       String successmsg = message.getText();
+      // scenario.log("Message : "+successmsg + congomsg +  AcNumMsg + New_Ac_No );
+       scenario.log("Loan Provider : " +Loan_provider + " Date : " +reponseDate+ " Status : " +Loan_status );
+       Assert.assertEquals(reponseDate, "10-08-2021");
+
     }
 
 }
